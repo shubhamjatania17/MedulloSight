@@ -1,5 +1,20 @@
 import React from 'react';
-import { ArrowRight, CheckCircle, AlertCircle, FileText, ChevronRight, Layers, Sliders, Shield } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle,
+  AlertTriangle,
+  FileText,
+  ChevronRight,
+  Layers,
+  Sliders,
+  Shield,
+  BookOpen,
+  Users,
+  Activity,
+  Cpu,
+  SplitSquareVertical,
+  Maximize2
+} from 'lucide-react';
 import DisclaimerBanner from '../components/DisclaimerBanner';
 
 export default function LandingPage({ onLaunchWorkstation }) {
@@ -9,42 +24,142 @@ export default function LandingPage({ onLaunchWorkstation }) {
     { name: "Krish Karanpuria", rollNo: "I035" }
   ];
 
-
-
   return (
-    <div style={{ backgroundColor: '#ffffff' }}>
-      {/* Disclaimer Banner */}
+    <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Top Disclaimer Banner */}
       <DisclaimerBanner />
+
+      {/* Dedicated Landing Header */}
+      <header
+        style={{
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e2e8f0',
+          position: 'sticky',
+          top: 0,
+          zIndex: 90,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.03)'
+        }}
+      >
+        <div
+          className="container"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.85rem 1.5rem',
+            gap: '1rem',
+            flexWrap: 'wrap'
+          }}
+        >
+          {/* Brand Identity */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div
+              style={{
+                width: '34px',
+                height: '34px',
+                backgroundColor: '#1d4ed8',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '1.1rem',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
+              M
+            </div>
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '1.2rem', color: '#0f172a', lineHeight: 1.1 }}>
+                MedulloSight
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                Classical MRI Image Analysis & Segmentation
+              </div>
+            </div>
+          </div>
+
+          {/* In-Page Navigation Links */}
+          <nav style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', fontSize: '0.875rem' }}>
+            <a href="#motivation" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              Motivation & Scope
+            </a>
+            <a href="#classical-cv" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              Classical CV vs DL
+            </a>
+            <a href="#benchmarks" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              Benchmarks
+            </a>
+            <a href="#pipeline" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              10-Step Pipeline
+            </a>
+            <a href="#limitations" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              Limitations & Policy
+            </a>
+            <a href="#team" style={{ color: '#475569', textDecoration: 'none', fontWeight: 500 }}>
+              Team
+            </a>
+          </nav>
+
+          {/* Primary Action: Launch Workstation */}
+          <button
+            onClick={onLaunchWorkstation}
+            className="btn btn-primary"
+            style={{ padding: '0.55rem 1.25rem', fontSize: '0.875rem', fontWeight: 600 }}
+          >
+            <span>Launch Workstation</span>
+            <ArrowRight size={15} />
+          </button>
+        </div>
+      </header>
 
       {/* Hero Section */}
       <section
+        id="overview"
         style={{
           padding: '4.5rem 0 3.5rem',
           borderBottom: '1px solid #e2e8f0',
           background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)'
         }}
       >
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center' }}>
+        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: '3rem', alignItems: 'center' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '4px', padding: '0.25rem 0.6rem', fontSize: '0.75rem', fontWeight: 600, color: '#1d4ed8', textTransform: 'uppercase', marginBottom: '1.25rem', letterSpacing: '0.04em' }}>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                backgroundColor: '#eff6ff',
+                border: '1px solid #bfdbfe',
+                borderRadius: '4px',
+                padding: '0.25rem 0.65rem',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: '#1d4ed8',
+                textTransform: 'uppercase',
+                marginBottom: '1.25rem',
+                letterSpacing: '0.04em'
+              }}
+            >
               Training-Free Classical MRI Processing
             </div>
-            
+
             <h1 style={{ fontSize: '2.5rem', lineHeight: 1.15, fontWeight: 700, color: '#0f172a', marginBottom: '1.25rem' }}>
-              Understanding Medulloblastoma Through MRI Image Processing
+              Understanding Medulloblastoma Through Classical Image Processing
             </h1>
-            
+
             <p style={{ fontSize: '1.05rem', lineHeight: 1.6, color: '#475569', marginBottom: '2rem' }}>
-              MedulloSight provides a transparent, training-free computer vision pipeline for improving MRI visibility, analyzing image frequency structure, detecting tissue edges, applying Otsu thresholding, and isolating candidate regions of interest in posterior fossa MRI slices.
+              MedulloSight provides a transparent, training-free computer vision platform for improving MRI visibility, analyzing image frequency structure, detecting tissue edges, applying Otsu thresholding, and isolating candidate regions of interest in posterior fossa MRI slices.
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button
                 onClick={onLaunchWorkstation}
                 className="btn btn-primary"
-                style={{ padding: '0.75rem 1.5rem', fontSize: '0.95rem' }}
+                style={{ padding: '0.75rem 1.6rem', fontSize: '0.95rem', fontWeight: 600 }}
               >
-                <span>Analyze an MRI</span>
+                <span>Launch Analysis Workstation</span>
                 <ArrowRight size={16} />
               </button>
 
@@ -53,11 +168,11 @@ export default function LandingPage({ onLaunchWorkstation }) {
                 className="btn btn-secondary"
                 style={{ padding: '0.75rem 1.5rem', fontSize: '0.95rem' }}
               >
-                Explore the Pipeline
+                Explore 10-Step Pipeline
               </a>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '2rem', fontSize: '0.8rem', color: '#64748b' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginTop: '2rem', fontSize: '0.8rem', color: '#64748b', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                 <CheckCircle size={15} style={{ color: '#059669' }} />
                 <span>Deterministic Algorithms</span>
@@ -143,19 +258,22 @@ export default function LandingPage({ onLaunchWorkstation }) {
         </div>
       </section>
 
-      {/* Medical Context Section */}
-      <section id="context" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
+      {/* Project Motivation & Scientific Scope (Merged from AboutView & Landing) */}
+      <section id="motivation" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
         <div className="container">
-          <div style={{ maxWidth: '780px', margin: '0 auto 3rem', textAlign: 'center' }}>
-            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Anatomical & Clinical Context</span>
-            <h2>What is Medulloblastoma?</h2>
-            <p style={{ fontSize: '1.05rem', color: '#475569' }}>
-              Medulloblastoma is a fast-growing, highly malignant brain tumor that commonly develops in pediatric patients. It arises in the posterior fossa—specifically the cerebellum and surrounding the fourth ventricle—frequently compromising critical motor coordination and cerebrospinal fluid pathways.
+          <div style={{ maxWidth: '850px', margin: '0 auto 3rem', textAlign: 'center' }}>
+            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Scientific & Clinical Scope</span>
+            <h2>Project Motivation & Anatomical Context</h2>
+            <p style={{ fontSize: '1.05rem', color: '#475569', lineHeight: 1.6 }}>
+              Medulloblastoma is the most common malignant pediatric brain tumor, originating in the posterior fossa near the cerebellum and fourth ventricle. Magnetic Resonance Imaging (MRI) is the primary non-invasive modality for clinical staging, but MRI scans exhibit narrow dynamic ranges, scanner variations, and field inhomogeneities.
+            </p>
+            <p style={{ fontSize: '0.95rem', color: '#64748b', lineHeight: 1.6, margin: 0 }}>
+              MedulloSight was created to make image-processing transformations transparent, measurable, and inspectable. By breaking down enhancement, frequency-domain filtering, edge analysis, thresholding, and morphological operations into distinct steps, researchers and students can inspect how intermediate pixel transformations lead to candidate regions of interest without relying on opaque black boxes.
             </p>
           </div>
 
           {/* MRI Sequence Trio */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '2.5rem' }}>
             <div className="card" style={{ borderTop: '4px solid #475569' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
                 <span style={{ fontWeight: 700, fontSize: '1.1rem', color: '#0f172a' }}>T1-Weighted</span>
@@ -212,11 +330,69 @@ export default function LandingPage({ onLaunchWorkstation }) {
         </div>
       </section>
 
-      {/* Why MRI Preprocessing Matters */}
-      <section style={{ padding: '4.5rem 0', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+      {/* Training-Free Classical CV Declaration vs Deep Learning (Merged from AboutView) */}
+      <section id="classical-cv" style={{ padding: '4.5rem 0', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+        <div className="container">
+          <div style={{ maxWidth: '850px', margin: '0 auto 3rem', textAlign: 'center' }}>
+            <span className="badge badge-blue" style={{ marginBottom: '0.75rem' }}>Algorithmic Rationale</span>
+            <h2>Training-Free Classical Approach vs. Black-Box Deep Learning</h2>
+            <p style={{ fontSize: '1.05rem', color: '#475569' }}>
+              Why MedulloSight purposefully implements deterministic, mathematical computer vision rather than deep neural networks.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+            {/* Classical CV Column */}
+            <div className="card" style={{ borderTop: '4px solid #0d9488', backgroundColor: '#ffffff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <Layers size={20} style={{ color: '#0d9488' }} />
+                <h3 style={{ fontSize: '1.15rem', margin: 0, color: '#0f172a' }}>
+                  Deterministic Classical CV (MedulloSight)
+                </h3>
+              </div>
+              <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, marginBottom: '1rem' }}>
+                Relies entirely on closed-form mathematical equations and spatial/frequency domain operators:
+              </p>
+              <ul style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.7, paddingLeft: '1.25rem', margin: 0 }}>
+                <li><strong>ITU-R BT.601 Luminance Weighting:</strong> Standardized perceptual intensity mapping.</li>
+                <li><strong>Percentile Normalization (P1–P99):</strong> Robust contrast stretching rejecting outlier hot pixels.</li>
+                <li><strong>2D FFT Butterworth Filters:</strong> Continuous frequency transfer functions with smooth roll-off and zero Gibbs ringing.</li>
+                <li><strong>Discrete Spatial Convolution:</strong> Direct differential edge operators (Sobel, Roberts, Prewitt, Laplacian).</li>
+                <li><strong>Otsu Global Binarization:</strong> Direct statistical maximization of inter-class variance.</li>
+                <li><strong>Morphological Set Operations:</strong> Topologically provable erosion, dilation, opening, and closing.</li>
+                <li><strong>Zero Training Data or GPUs:</strong> Runs instantaneously on standard CPU hardware with 100% reproducibility.</li>
+              </ul>
+            </div>
+
+            {/* Deep Learning Column */}
+            <div className="card" style={{ borderTop: '4px solid #64748b', backgroundColor: '#ffffff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <Cpu size={20} style={{ color: '#64748b' }} />
+                <h3 style={{ fontSize: '1.15rem', margin: 0, color: '#0f172a' }}>
+                  Deep Learning Models (CNNs, U-Nets, Transformers)
+                </h3>
+              </div>
+              <p style={{ fontSize: '0.875rem', color: '#475569', lineHeight: 1.6, marginBottom: '1rem' }}>
+                Operate through high-dimensional non-linear parameterizations presenting well-documented clinical imaging trade-offs:
+              </p>
+              <ul style={{ fontSize: '0.85rem', color: '#475569', lineHeight: 1.7, paddingLeft: '1.25rem', margin: 0 }}>
+                <li><strong>Opaque Latent Embeddings:</strong> Millions of uninterpretable weights acting as a complete black box.</li>
+                <li><strong>Heavy Data Hungry:</strong> Demand thousands of manually contoured patient scans from certified radiologists.</li>
+                <li><strong>Susceptible to Domain Shift:</strong> Fragile to slight differences in MRI scanner manufacturer, field strength (1.5T vs 3T), or TE/TR timing.</li>
+                <li><strong>Hallucination Risk:</strong> Generative or autoencoder architectures can synthesize plausible-looking but non-existent anatomical boundaries.</li>
+                <li><strong>Resource Intensive:</strong> Require specialized GPU clusters and cloud inference infrastructure.</li>
+                <li><strong>No Intermediate Inspection:</strong> Clinicians cannot inspect or debug intermediate algorithmic steps.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Classical Preprocessing Matters & Experimental Benchmarks */}
+      <section id="benchmarks" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
         <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', alignItems: 'center' }}>
           <div>
-            <span className="badge badge-blue" style={{ marginBottom: '0.75rem' }}>Scientific Rationale</span>
+            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Experimental Benchmarks</span>
             <h2>Why Classical Preprocessing Matters</h2>
             <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: 1.6 }}>
               Raw MRI scans acquired directly from clinical scanners present multiple imaging artifacts that obscure anatomical tissue margins:
@@ -258,10 +434,10 @@ export default function LandingPage({ onLaunchWorkstation }) {
       </section>
 
       {/* 10-Step Pipeline Overview */}
-      <section id="pipeline" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
+      <section id="pipeline" style={{ padding: '4.5rem 0', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
         <div className="container">
           <div style={{ maxWidth: '750px', margin: '0 auto 3rem', textAlign: 'center' }}>
-            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Methodological Architecture</span>
+            <span className="badge badge-blue" style={{ marginBottom: '0.75rem' }}>Methodological Architecture</span>
             <h2>The 10-Step Classical Pipeline</h2>
             <p style={{ color: '#475569' }}>
               Divided strictly into three scientific phases according to spatial domain enhancement, frequency-domain filtering, and morphological segmentation.
@@ -270,7 +446,7 @@ export default function LandingPage({ onLaunchWorkstation }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
             {/* Stage A */}
-            <div className="card" style={{ borderTop: '4px solid #2563eb' }}>
+            <div className="card" style={{ borderTop: '4px solid #2563eb', backgroundColor: '#ffffff' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#2563eb', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Stage A</div>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Spatial-Domain Enhancement</h3>
               <ol style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#475569', lineHeight: 1.8 }}>
@@ -283,7 +459,7 @@ export default function LandingPage({ onLaunchWorkstation }) {
             </div>
 
             {/* Stage B */}
-            <div className="card" style={{ borderTop: '4px solid #0d9488' }}>
+            <div className="card" style={{ borderTop: '4px solid #0d9488', backgroundColor: '#ffffff' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#0d9488', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Stage B</div>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Frequency Domain & Edges</h3>
               <ol style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#475569', lineHeight: 1.8 }} start={6}>
@@ -293,7 +469,7 @@ export default function LandingPage({ onLaunchWorkstation }) {
             </div>
 
             {/* Stage C */}
-            <div className="card" style={{ borderTop: '4px solid #059669' }}>
+            <div className="card" style={{ borderTop: '4px solid #059669', backgroundColor: '#ffffff' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669', textTransform: 'uppercase', marginBottom: '0.5rem' }}>Stage C</div>
               <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Segmentation & Morphology</h3>
               <ol style={{ paddingLeft: '1.25rem', fontSize: '0.85rem', color: '#475569', lineHeight: 1.8 }} start={8}>
@@ -307,42 +483,65 @@ export default function LandingPage({ onLaunchWorkstation }) {
         </div>
       </section>
 
-      {/* Limitations & Responsible Use */}
-      <section id="limitations" style={{ padding: '4.5rem 0', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-        <div className="container" style={{ maxWidth: '900px' }}>
+      {/* Limitations, Academic Integrity & Strict Non-Clinical Claims Policy (Merged from AboutView & Landing) */}
+      <section id="limitations" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
+        <div className="container" style={{ maxWidth: '950px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <span className="badge badge-warning" style={{ marginBottom: '0.75rem' }}>Academic Integrity</span>
-            <h2>Limitations & Responsible Use</h2>
+            <span className="badge badge-warning" style={{ marginBottom: '0.75rem' }}>Academic Integrity & Policy</span>
+            <h2>Limitations & Non-Clinical Claims Policy</h2>
             <p style={{ color: '#475569' }}>
-              The research project establishes clear boundaries regarding data, methodology, and clinical application.
+              The research project establishes clear boundaries regarding data, methodology, and non-clinical application.
             </p>
           </div>
 
+          {/* Prominent Non-Clinical Claims Policy Banner (from AboutView) */}
+          <div
+            className="card"
+            style={{
+              backgroundColor: '#fffbeb',
+              border: '1px solid #fde68a',
+              borderLeft: '4px solid #d97706',
+              marginBottom: '2rem',
+              padding: '1.5rem'
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <AlertTriangle size={20} style={{ color: '#d97706' }} />
+              <h3 style={{ fontSize: '1.1rem', margin: 0, color: '#92400e' }}>
+                Strict Non-Clinical Claims Policy
+              </h3>
+            </div>
+            <p style={{ color: '#92400e', fontSize: '0.9rem', lineHeight: 1.6, margin: 0 }}>
+              MedulloSight explicitly disclaims any clinical diagnostic capability. It does <strong>not</strong> detect cancer, diagnose medulloblastoma, or claim clinical sensitivity/specificity. All isolated regions are designated strictly as algorithmic candidate hypotheses for research, methodological comparison, and pedagogical inspection only.
+            </p>
+          </div>
+
+          {/* 4 Methodological Boundary Cards */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
             <div className="card">
               <h4 style={{ color: '#0f172a', marginBottom: '0.35rem' }}>Evaluation Cohort Size</h4>
-              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 The classical pipeline was evaluated on a small cohort of 10 two-dimensional MRI slices from a public dataset. Results reflect pilot feasibility rather than broad clinical statistical power.
               </p>
             </div>
 
             <div className="card">
               <h4 style={{ color: '#0f172a', marginBottom: '0.35rem' }}>Ground-Truth Absence</h4>
-              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 No manual ground-truth segmentation masks from certified neuroradiologists were available. Consequently, clinical Dice/IoU segmentation overlap metrics are not claimed or reported.
               </p>
             </div>
 
             <div className="card">
               <h4 style={{ color: '#0f172a', marginBottom: '0.35rem' }}>T1 Scalp Fat Interference</h4>
-              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 On non-contrast T1 acquisitions, bright subcutaneous scalp fat creates a dominant high-intensity mode in global Otsu histograms, which can misguide candidate extraction to the skull perimeter.
               </p>
             </div>
 
             <div className="card">
               <h4 style={{ color: '#0f172a', marginBottom: '0.35rem' }}>Candidate Region Designation</h4>
-              <p style={{ fontSize: '0.85rem', color: '#64748b' }}>
+              <p style={{ fontSize: '0.85rem', color: '#64748b', lineHeight: 1.5, margin: 0 }}>
                 The extracted region is strictly a <em>candidate posterior-fossa segmentation region</em>, not a confirmed tumor boundary. It must never be interpreted as a diagnostic outcome.
               </p>
             </div>
@@ -350,11 +549,11 @@ export default function LandingPage({ onLaunchWorkstation }) {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section id="team" style={{ padding: '4.5rem 0', borderBottom: '1px solid #e2e8f0' }}>
+      {/* Research Team Contributors Section */}
+      <section id="team" style={{ padding: '4.5rem 0', backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
         <div className="container" style={{ maxWidth: '850px' }}>
           <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Research Team</span>
+            <span className="badge badge-teal" style={{ marginBottom: '0.75rem' }}>Research & Engineering</span>
             <h2>Project Contributors</h2>
             <p style={{ color: '#475569' }}>
               Academic development and research methodology contributors for the MedulloSight project.
@@ -363,11 +562,11 @@ export default function LandingPage({ onLaunchWorkstation }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
             {teamMembers.map((member, i) => (
-              <div key={i} className="card" style={{ textAlign: 'center', padding: '1.75rem 1rem' }}>
+              <div key={i} className="card" style={{ textAlign: 'center', padding: '1.75rem 1rem', backgroundColor: '#ffffff' }}>
                 <div
                   style={{
-                    width: '72px',
-                    height: '72px',
+                    width: '64px',
+                    height: '64px',
                     borderRadius: '50%',
                     backgroundColor: '#e2e8f0',
                     border: '2px solid #cbd5e1',
@@ -377,7 +576,7 @@ export default function LandingPage({ onLaunchWorkstation }) {
                     justifyContent: 'center',
                     color: '#64748b',
                     fontWeight: 700,
-                    fontSize: '1.2rem',
+                    fontSize: '1.15rem',
                     fontFamily: 'var(--font-mono)'
                   }}
                 >
@@ -391,23 +590,22 @@ export default function LandingPage({ onLaunchWorkstation }) {
                   {member.rollNo}
                 </div>
               </div>
-
             ))}
           </div>
         </div>
       </section>
 
-      {/* Call to Action Section */}
+      {/* Call to Action Section (Redirects to App) */}
       <section style={{ padding: '4.5rem 0', backgroundColor: '#0f172a', color: '#ffffff', textAlign: 'center' }}>
-        <div className="container" style={{ maxWidth: '700px' }}>
-          <h2 style={{ color: '#ffffff', fontSize: '2rem', marginBottom: '1rem' }}>Ready to inspect an MRI?</h2>
+        <div className="container" style={{ maxWidth: '720px' }}>
+          <h2 style={{ color: '#ffffff', fontSize: '2rem', marginBottom: '1rem' }}>Ready to inspect an MRI slice?</h2>
           <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-            Explore each stage of the MedulloSight processing pipeline and see how classical image-processing techniques transform an MRI slice into measurable intermediate representations and a candidate region of interest.
+            Launch the interactive MedulloSight Workstation to upload an MRI slice, inspect live pixel transformations, view candidate segmentation overlays, compute quantitative image metrics, and export publication-ready reports.
           </p>
           <button
             onClick={onLaunchWorkstation}
             className="btn btn-primary"
-            style={{ padding: '0.85rem 2rem', fontSize: '1rem', backgroundColor: '#2563eb' }}
+            style={{ padding: '0.85rem 2.25rem', fontSize: '1rem', backgroundColor: '#2563eb', fontWeight: 600 }}
           >
             <span>Launch MedulloSight Workstation</span>
             <ArrowRight size={18} />
@@ -422,9 +620,24 @@ export default function LandingPage({ onLaunchWorkstation }) {
             <strong>© 2026 MedulloSight</strong> — Classical MRI Image Analysis & Segmentation
           </div>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
-            <a href="#context" style={{ color: '#64748b', textDecoration: 'none' }}>Medical Context</a>
+            <a href="#motivation" style={{ color: '#64748b', textDecoration: 'none' }}>Motivation</a>
+            <a href="#classical-cv" style={{ color: '#64748b', textDecoration: 'none' }}>Classical CV</a>
             <a href="#pipeline" style={{ color: '#64748b', textDecoration: 'none' }}>10-Step Pipeline</a>
-            <a href="#limitations" style={{ color: '#64748b', textDecoration: 'none' }}>Responsible Use</a>
+            <a href="#limitations" style={{ color: '#64748b', textDecoration: 'none' }}>Policy</a>
+            <button
+              onClick={onLaunchWorkstation}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                color: '#2563eb',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.8rem'
+              }}
+            >
+              Launch Workstation →
+            </button>
           </div>
         </div>
       </footer>

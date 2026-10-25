@@ -9,23 +9,57 @@ import ComparisonView from './views/ComparisonView';
 import MetricsView from './views/MetricsView';
 import BatchView from './views/BatchView';
 import ReportsView from './views/ReportsView';
-import AboutView from './views/AboutView';
 import { getSessionsList, getSessionDetails, getBenchmarkSamples } from './services/api';
 
+const VALID_APP_VIEWS = [
+  'dashboard',
+  'analyze',
+  'pipeline',
+  'segmentation',
+  'comparison',
+  'metrics',
+  'batch',
+  'reports'
+];
+
+function parseHash(hash) {
+  if (hash && hash.startsWith('#/app')) {
+    const rawView = hash.replace(/^#\/app\/?/, '').split('?')[0];
+    const appView = VALID_APP_VIEWS.includes(rawView) ? rawView : 'analyze';
+    return { site: 'app', view: appView };
+  }
+  return { site: 'landing', view: 'landing' };
+}
+
 export default function App() {
-  const [currentView, setCurrentView] = useState('landing');
+  const initialRoute = parseHash(window.location.hash);
+  const [currentSite, setCurrentSite] = useState(initialRoute.site);
+  const [currentAppView, setCurrentAppView] = useState(initialRoute.view === 'landing' ? 'analyze' : initialRoute.view);
   const [activeSession, setActiveSession] = useState(null);
   const [sessionHistory, setSessionHistory] = useState([]);
   const [benchmarkSamples, setBenchmarkSamples] = useState([]);
 
+  // Synchronize site and app view with browser URL hash
   useEffect(() => {
-    // Load recent sessions and benchmark sample slices on mount
+    const handleHashChange = () => {
+      const route = parseHash(window.location.hash);
+      setCurrentSite(route.site);
+      if (route.site === 'app') {
+        setCurrentAppView(route.view);
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  // Initial load of sample slices and session history
+  useEffect(() => {
     async function loadInitialData() {
       try {
         const samples = await getBenchmarkSamples();
         setBenchmarkSamples(samples);
       } catch (err) {
-        // Fallback local samples if API hasn't loaded yet
         setBenchmarkSamples([
           { id: 't1', filename: 't1_medullo.png', sequence: 'T1', path: '/samples/t1_medullo.png' },
           { id: 't1c', filename: 't1c_medullo.png', sequence: 'T1C+', path: '/samples/t1c_medullo.png' },
@@ -44,80 +78,101 @@ export default function App() {
     loadInitialData();
   }, []);
 
+  const navigateToApp = (view = 'analyze') => {
+    const targetView = VALID_APP_VIEWS.includes(view) ? view : 'analyze';
+    window.location.hash = `#/app/${targetView}`;
+    setCurrentSite('app');
+    setCurrentAppView(targetView);
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToLanding = () => {
+    window.location.hash = '#/';
+    setCurrentSite('landing');
+    window.scrollTo(0, 0);
+  };
+
+  const navigateToAppView = (view) => {
+    const targetView = VALID_APP_VIEWS.includes(view) ? view : 'analyze';
+    window.location.hash = `#/app/${targetView}`;
+    setCurrentAppView(targetView);
+    window.scrollTo(0, 0);
+  };
+
   const handleProcessingComplete = (sessionResult) => {
     setActiveSession(sessionResult);
     setSessionHistory(prev => [sessionResult, ...prev.filter(s => s.sessionId !== sessionResult.sessionId)]);
-    // Transition to Dashboard or Pipeline upon completion
-    setCurrentView('dashboard');
+    navigateToAppView('dashboard');
   };
 
   const handleLoadSession = async (sessionId) => {
     try {
       const details = await getSessionDetails(sessionId);
       setActiveSession(details);
-      setCurrentView('dashboard');
+      navigateToAppView('dashboard');
     } catch (err) {
       console.error('Failed to load session details', err);
     }
   };
 
+  // 1. Landing Page Portal (Comprehensive merged content)
+  if (currentSite === 'landing') {
+    return (
+      <LandingPage onLaunchWorkstation={() => navigateToApp('analyze')} />
+    );
+  }
+
+  // 2. Interactive Analysis Workstation (Separate app site)
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      {/* Top Application Navbar */}
+      {/* Top Workstation Navigation Bar */}
       <Navbar
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-        hasActiveSession={!!activeSession}
+        currentView={currentAppView}
+        setCurrentView={navigateToAppView}
+        onBackToLanding={navigateToLanding}
+        activeSession={activeSession}
       />
 
-      {/* Main Content View Switcher */}
+      {/* Main Workstation View Switcher */}
       <main style={{ flex: 1 }}>
-        {currentView === 'landing' && (
-          <LandingPage onLaunchWorkstation={() => setCurrentView('analyze')} />
-        )}
-
-        {currentView === 'dashboard' && (
+        {currentAppView === 'dashboard' && (
           <DashboardView
             activeSession={activeSession}
             sessionHistory={sessionHistory}
-            onNavigate={(viewId) => setCurrentView(viewId)}
+            onNavigate={navigateToAppView}
             onLoadSession={handleLoadSession}
           />
         )}
 
-        {currentView === 'analyze' && (
+        {currentAppView === 'analyze' && (
           <AnalyzeView
             onProcessingComplete={handleProcessingComplete}
             benchmarkSamples={benchmarkSamples}
           />
         )}
 
-        {currentView === 'pipeline' && (
+        {currentAppView === 'pipeline' && (
           <PipelineView activeSession={activeSession} />
         )}
 
-        {currentView === 'segmentation' && (
+        {currentAppView === 'segmentation' && (
           <SegmentationView activeSession={activeSession} />
         )}
 
-        {currentView === 'comparison' && (
+        {currentAppView === 'comparison' && (
           <ComparisonView activeSession={activeSession} />
         )}
 
-        {currentView === 'metrics' && (
+        {currentAppView === 'metrics' && (
           <MetricsView activeSession={activeSession} />
         )}
 
-        {currentView === 'batch' && (
+        {currentAppView === 'batch' && (
           <BatchView onSelectSession={handleProcessingComplete} />
         )}
 
-        {currentView === 'reports' && (
+        {currentAppView === 'reports' && (
           <ReportsView activeSession={activeSession} />
-        )}
-
-        {currentView === 'about' && (
-          <AboutView />
         )}
       </main>
     </div>

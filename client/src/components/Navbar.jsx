@@ -1,7 +1,16 @@
 import React from 'react';
-import { Activity, Layers, Cpu, FileText, BarChart2, SplitSquareVertical, HelpCircle, Archive } from 'lucide-react';
+import {
+  Activity,
+  Layers,
+  Cpu,
+  FileText,
+  BarChart2,
+  SplitSquareVertical,
+  Archive,
+  ArrowLeft
+} from 'lucide-react';
 
-export default function Navbar({ currentView, setCurrentView, hasActiveSession }) {
+export default function Navbar({ currentView, setCurrentView, onBackToLanding, activeSession }) {
   const workstationTabs = [
     { id: 'dashboard', label: 'Dashboard', icon: Activity },
     { id: 'analyze', label: 'Analyze', icon: Cpu },
@@ -10,8 +19,7 @@ export default function Navbar({ currentView, setCurrentView, hasActiveSession }
     { id: 'comparison', label: 'Comparison', icon: SplitSquareVertical },
     { id: 'metrics', label: 'Metrics', icon: BarChart2 },
     { id: 'batch', label: 'Batch Processing', icon: Archive },
-    { id: 'reports', label: 'Reports', icon: FileText },
-    { id: 'about', label: 'About', icon: HelpCircle }
+    { id: 'reports', label: 'Reports', icon: FileText }
   ];
 
   return (
@@ -36,49 +44,59 @@ export default function Navbar({ currentView, setCurrentView, hasActiveSession }
           gap: '1rem'
         }}
       >
-        {/* Brand identity */}
-        <div
-          onClick={() => setCurrentView('landing')}
-          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem' }}
-        >
-          <div
+        {/* Left Side: Return to Landing Portal + Workstation Brand */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={onBackToLanding}
+            className="btn btn-secondary btn-sm"
             style={{
-              width: '32px',
-              height: '32px',
-              backgroundColor: '#1d4ed8',
-              borderRadius: '4px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffffff',
-              fontWeight: '700',
-              fontSize: '1.05rem',
-              fontFamily: 'var(--font-mono)'
+              gap: '0.35rem',
+              fontWeight: 500,
+              color: '#475569',
+              padding: '0.35rem 0.75rem'
             }}
+            title="Return to the MedulloSight Overview & Documentation site"
           >
-            M
-          </div>
-          <div>
-            <div style={{ fontWeight: '700', fontSize: '1.15rem', color: '#0f172a', lineHeight: 1.1 }}>
-              MedulloSight
+            <ArrowLeft size={14} />
+            <span>Landing Page</span>
+          </button>
+
+          <div
+            onClick={() => setCurrentView('dashboard')}
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.6rem' }}
+          >
+            <div
+              style={{
+                width: '30px',
+                height: '30px',
+                backgroundColor: '#1d4ed8',
+                borderRadius: '5px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '1rem',
+                fontFamily: 'var(--font-mono)'
+              }}
+            >
+              M
             </div>
-            <div style={{ fontSize: '0.75rem', color: '#64748b', letterSpacing: '-0.01em' }}>
-              Classical MRI Image Analysis & Segmentation
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '1.05rem', color: '#0f172a', lineHeight: 1.1 }}>
+                MedulloSight Workstation
+              </div>
+              <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
+                Interactive Analysis Studio
+              </div>
             </div>
           </div>
         </div>
 
-        {/* View Switcher Navigation */}
+        {/* Center: Workstation Tab Navigation */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', overflowX: 'auto' }}>
-          <button
-            onClick={() => setCurrentView('landing')}
-            className={`btn btn-sm ${currentView === 'landing' ? 'btn-primary' : 'btn-secondary'}`}
-          >
-            Overview & Context
-          </button>
-
-          <span style={{ color: '#cbd5e1', margin: '0 0.25rem' }}>|</span>
-
           {workstationTabs.map(tab => {
             const Icon = tab.icon;
             const isActive = currentView === tab.id;
@@ -99,6 +117,37 @@ export default function Navbar({ currentView, setCurrentView, hasActiveSession }
             );
           })}
         </nav>
+
+        {/* Right Side: Active Specimen Status Chip */}
+        <div>
+          {activeSession ? (
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                backgroundColor: '#f0fdfa',
+                border: '1px solid #99f6e4',
+                padding: '0.25rem 0.6rem',
+                borderRadius: '4px',
+                fontSize: '0.75rem',
+                color: '#0d9488'
+              }}
+            >
+              <span style={{ width: '7px', height: '7px', borderRadius: '50%', backgroundColor: '#0d9488' }} />
+              <span style={{ fontWeight: 600, maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {activeSession.filename}
+              </span>
+              <span className="badge badge-teal" style={{ padding: '0.1rem 0.35rem', fontSize: '0.65rem' }}>
+                {activeSession.sequence}
+              </span>
+            </div>
+          ) : (
+            <span className="badge badge-blue" style={{ fontSize: '0.75rem' }}>
+              Ready for MRI
+            </span>
+          )}
+        </div>
       </div>
     </header>
   );
