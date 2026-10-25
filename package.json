@@ -1,0 +1,17 @@
+{
+  "name": "medullosight",
+  "version": "1.0.0",
+  "description": "MedulloSight — Classical MRI Image Analysis & Segmentation (MERN + Python Architecture)",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"PY-SERVICE,SERVER,CLIENT\" -c \"cyan,magenta,green\" \"npm run dev:py\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:py": ".venv\\Scripts\\uvicorn service:app --host 127.0.0.1 --port 8000 --reload --app-dir python_service",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "test:py": ".venv\\Scripts\\pytest python_service/tests",
+    "build:client": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}

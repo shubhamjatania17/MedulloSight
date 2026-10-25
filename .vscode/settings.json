@@ -1,0 +1,4 @@
+{
+  "python.analysis.extraPaths": ["./python_service"],
+  "python.autoComplete.extraPaths": ["./python_service"]
+}
