@@ -15,7 +15,6 @@ import {
   SplitSquareVertical,
   Maximize2
 } from 'lucide-react';
-import DisclaimerBanner from '../components/DisclaimerBanner';
 
 export default function LandingPage({ onLaunchWorkstation }) {
   const teamMembers = [
@@ -26,9 +25,6 @@ export default function LandingPage({ onLaunchWorkstation }) {
 
   return (
     <div style={{ backgroundColor: '#ffffff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Top Disclaimer Banner */}
-      <DisclaimerBanner />
-
       {/* Dedicated Landing Header */}
       <header
         style={{
