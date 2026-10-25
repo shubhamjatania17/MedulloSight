@@ -46,8 +46,12 @@ export default function Navbar({ currentView, setCurrentView, onBackToLanding, a
       >
         {/* Left Side: Return to Landing Portal + Workstation Brand */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <button
-            onClick={onBackToLanding}
+          <a
+            href="#/"
+            onClick={(e) => {
+              e.preventDefault();
+              onBackToLanding();
+            }}
             className="btn btn-secondary btn-sm"
             style={{
               display: 'flex',
@@ -55,13 +59,14 @@ export default function Navbar({ currentView, setCurrentView, onBackToLanding, a
               gap: '0.35rem',
               fontWeight: 500,
               color: '#475569',
-              padding: '0.35rem 0.75rem'
+              padding: '0.35rem 0.75rem',
+              textDecoration: 'none'
             }}
             title="Return to the MedulloSight Overview & Documentation site"
           >
             <ArrowLeft size={14} />
             <span>Landing Page</span>
-          </button>
+          </a>
 
           <div
             onClick={() => setCurrentView('dashboard')}

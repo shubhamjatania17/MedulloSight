@@ -103,14 +103,18 @@ export default function LandingPage({ onLaunchWorkstation }) {
           </nav>
 
           {/* Primary Action: Launch Workstation */}
-          <button
-            onClick={onLaunchWorkstation}
+          <a
+            href="#/app/analyze"
+            onClick={(e) => {
+              e.preventDefault();
+              onLaunchWorkstation();
+            }}
             className="btn btn-primary"
             style={{ padding: '0.55rem 1.25rem', fontSize: '0.875rem', fontWeight: 600 }}
           >
             <span>Launch Workstation</span>
             <ArrowRight size={15} />
-          </button>
+          </a>
         </div>
       </header>
 
@@ -154,14 +158,18 @@ export default function LandingPage({ onLaunchWorkstation }) {
             </p>
 
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              <button
-                onClick={onLaunchWorkstation}
+              <a
+                href="#/app/analyze"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onLaunchWorkstation();
+                }}
                 className="btn btn-primary"
                 style={{ padding: '0.75rem 1.6rem', fontSize: '0.95rem', fontWeight: 600 }}
               >
                 <span>Launch Analysis Workstation</span>
                 <ArrowRight size={16} />
-              </button>
+              </a>
 
               <a
                 href="#pipeline"
@@ -602,14 +610,18 @@ export default function LandingPage({ onLaunchWorkstation }) {
           <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: 1.6, marginBottom: '2rem' }}>
             Launch the interactive MedulloSight Workstation to upload an MRI slice, inspect live pixel transformations, view candidate segmentation overlays, compute quantitative image metrics, and export publication-ready reports.
           </p>
-          <button
-            onClick={onLaunchWorkstation}
+          <a
+            href="#/app/analyze"
+            onClick={(e) => {
+              e.preventDefault();
+              onLaunchWorkstation();
+            }}
             className="btn btn-primary"
-            style={{ padding: '0.85rem 2.25rem', fontSize: '1rem', backgroundColor: '#2563eb', fontWeight: 600 }}
+            style={{ padding: '0.85rem 2.25rem', fontSize: '1rem', backgroundColor: '#2563eb', fontWeight: 600, display: 'inline-flex' }}
           >
             <span>Launch MedulloSight Workstation</span>
             <ArrowRight size={18} />
-          </button>
+          </a>
         </div>
       </section>
 
@@ -624,8 +636,12 @@ export default function LandingPage({ onLaunchWorkstation }) {
             <a href="#classical-cv" style={{ color: '#64748b', textDecoration: 'none' }}>Classical CV</a>
             <a href="#pipeline" style={{ color: '#64748b', textDecoration: 'none' }}>10-Step Pipeline</a>
             <a href="#limitations" style={{ color: '#64748b', textDecoration: 'none' }}>Policy</a>
-            <button
-              onClick={onLaunchWorkstation}
+            <a
+              href="#/app/analyze"
+              onClick={(e) => {
+                e.preventDefault();
+                onLaunchWorkstation();
+              }}
               style={{
                 background: 'none',
                 border: 'none',
@@ -633,11 +649,12 @@ export default function LandingPage({ onLaunchWorkstation }) {
                 color: '#2563eb',
                 cursor: 'pointer',
                 fontWeight: 600,
-                fontSize: '0.8rem'
+                fontSize: '0.8rem',
+                textDecoration: 'none'
               }}
             >
               Launch Workstation →
-            </button>
+            </a>
           </div>
         </div>
       </footer>
