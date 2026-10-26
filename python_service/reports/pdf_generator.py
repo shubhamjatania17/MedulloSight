@@ -6,6 +6,7 @@ Strictly adheres to non-diagnostic terminology and academic formatting.
 
 import datetime
 import io
+from xml.sax.saxutils import escape
 from typing import Dict, Any
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -322,12 +323,12 @@ def generate_pdf_report(session_data: Dict[str, Any]) -> bytes:
         [
             "Initial Intensity Std Dev",
             init_std,
-            "Baseline intensity dispersion (~0.180 in research)"
+            "Measured intensity spread, grayscale scale [0-255]"
         ],
         [
             "Stretched Intensity Std Dev",
             str_std,
-            "Post-enhancement dispersion (~0.241, +34% spread)"
+            "Measured post-stretch intensity spread, grayscale [0-255]"
         ],
         [
             "Shannon Entropy",
@@ -362,7 +363,7 @@ def generate_pdf_report(session_data: Dict[str, Any]) -> bytes:
         [
             "Candidate Bounding Box [y,x,y,x]",
             bbox_str,
-            "Spatial extent within intracranial cavity"
+            "Spatial extent of the algorithmic component; anatomy is not verified"
         ]
     ]
     m_table = Table(m_data, colWidths=[170, 130, 220])
@@ -404,6 +405,24 @@ def generate_pdf_report(session_data: Dict[str, Any]) -> bytes:
         story.append(w_table)
         story.append(Spacer(1, 10))
 
+    # Separate model classification from the classical candidate component.
+    ml = session_data.get("ml", {})
+    story.append(Paragraph("Experimental ML Classification", section_heading))
+    if ml.get("status") == "ready":
+        story.append(Paragraph(f"Model version: {escape(ml.get('model_version', ''))}. Fixed preprocessing: {escape(ml.get('preprocessing_version', ''))}.", body_style))
+        rows = [["Classifier", "Input", "Class score", "Threshold", "Output"]]
+        for prediction in ml.get("predictions", []):
+            rows.append([prediction["family"], prediction["variant"], f"{prediction['score']:.3f}", f"{prediction['threshold']:.3f}", prediction["label"]])
+        table = Table(rows, colWidths=[80,50,80,80,190])
+        table.setStyle(TableStyle([("BACKGROUND",(0,0),(-1,0),colors.HexColor("#e2e8f0")),("FONTSIZE",(0,0),(-1,-1),8),("GRID",(0,0),(-1,-1),.5,colors.HexColor("#cbd5e1")),("PADDING",(0,0),(-1,-1),6)]))
+        story.append(table)
+        story.append(Paragraph(escape(ml.get("note", "")), body_style))
+    else:
+        story.append(Paragraph("ML was not available or was not run for this case. No classification result is implied.", body_style))
+    if session_data.get("notes"):
+        story.append(Paragraph("Research Notes", section_heading))
+        story.append(Paragraph(escape(session_data["notes"]).replace("\n", "<br/>"), body_style))
+    story.append(Paragraph(f"Classical pipeline version: {escape(session_data.get('pipeline_version', 'notebook-v1'))}. Candidate ROI is not a verified tumour contour.", body_style))
     # --- 8. Methodological Limitations ---
     story.append(
         Paragraph("Methodological Scope & Limitations", section_heading)
@@ -415,8 +434,8 @@ def generate_pdf_report(session_data: Dict[str, Any]) -> bytes:
         "performed due to absence of expert manual contour annotations.<br/>"
         "3. T1 Sequence Constraints: Non-contrast T1 acquisitions frequently "
         "suffer from bright subcutaneous scalp fat dominating Otsu.<br/>"
-        "4. Training-Free Nature: This is a classical computer-vision "
-        "pipeline, not a deep-learning model."
+        "4. Separate Methods: The classical ROI is training-free. ML classification "
+        "is a separately trained experimental extension; patient-level validation has not been established."
     )
     story.append(Paragraph(limitations_text, body_style))
     story.append(Spacer(1, 12))

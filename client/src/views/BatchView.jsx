@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Archive, Download, FileSpreadsheet, UploadCloud, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Archive, Download, FileSpreadsheet, UploadCloud, CheckCircle, Sparkles } from 'lucide-react';
 import { analyzeBatchImages, getBatchCsvUrl, getBatchZipUrl } from '../services/api';
+import { MRI_SPECIMENS } from '../data/mriSpecimens';
 
-export default function BatchView({ onSelectSession }) {
+export default function BatchView({ onSelectSession: _onSelectSession }) {
   const [batchFiles, setBatchFiles] = useState([]);
   const [sequence, setSequence] = useState('Unknown');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -13,6 +14,26 @@ export default function BatchView({ onSelectSession }) {
     if (e.target.files) {
       setBatchFiles(Array.from(e.target.files));
       setErrorMsg(null);
+    }
+  };
+
+  const handleLoadCohortBatch = async () => {
+    try {
+      setIsProcessing(true);
+      setErrorMsg(null);
+      const files = await Promise.all(
+        MRI_SPECIMENS.map(async (s) => {
+          const res = await fetch(s.path);
+          const blob = await res.blob();
+          return new File([blob], s.filename, { type: 'image/jpeg' });
+        })
+      );
+      setBatchFiles(files);
+      setSequence('Mixed / Cohort');
+    } catch (_err) {
+      setErrorMsg('Failed to pre-load cohort batch slices.');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -71,6 +92,18 @@ export default function BatchView({ onSelectSession }) {
               onChange={handleFiles}
               style={{ fontSize: '0.85rem' }}
             />
+            <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={handleLoadCohortBatch}
+                className="btn btn-secondary btn-sm"
+                style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}
+                disabled={isProcessing}
+              >
+                <Sparkles size={12} style={{ color: '#2563eb' }} />
+                <span>Load All 10 Cohort Slices (1-Click)</span>
+              </button>
+            </div>
             {batchFiles.length > 0 && (
               <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#059669', fontWeight: 500 }}>
                 {batchFiles.length} slice(s) queued for execution.

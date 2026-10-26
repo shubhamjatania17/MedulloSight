@@ -5,11 +5,11 @@
 
 import axios from 'axios';
 
-const API_BASE = 'http://127.0.0.1:5000/api';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE,
-  timeout: 45000
+  timeout: 900000
 });
 
 export async function analyzeSingleImage(formData) {

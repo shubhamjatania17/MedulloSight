@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { SplitSquareVertical, Grid, Sliders } from 'lucide-react';
 import ImageSlider from '../components/ImageSlider';
 
 export default function ComparisonView({ activeSession }) {
+  const [beforeStageId, setBeforeStageId] = useState('raw');
+  const [afterStageId, setAfterStageId] = useState('overlay_image');
+
   if (!activeSession) {
     return (
       <div className="container" style={{ padding: '3rem 0', textAlign: 'center' }}>
@@ -26,9 +28,6 @@ export default function ComparisonView({ activeSession }) {
     { id: 'opened_mask', label: 'Morphological Opened', src: imgs.opened_mask },
     { id: 'overlay_image', label: 'Candidate ROI Overlay', src: imgs.overlay_image }
   ];
-
-  const [beforeStageId, setBeforeStageId] = useState('raw');
-  const [afterStageId, setAfterStageId] = useState('overlay_image');
 
   const beforeStage = stages.find(s => s.id === beforeStageId) || stages[0];
   const afterStage = stages.find(s => s.id === afterStageId) || stages[stages.length - 1];

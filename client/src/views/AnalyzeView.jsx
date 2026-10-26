@@ -1,14 +1,16 @@
-import React, { useState, useRef } from 'react';
-import { UploadCloud, Image as ImageIcon, Sliders, Play, RotateCcw, Check, AlertCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { UploadCloud, Sliders, Play, RotateCcw, AlertCircle, Sparkles } from 'lucide-react';
 import { analyzeSingleImage } from '../services/api';
+import { MRI_SPECIMENS } from '../data/mriSpecimens';
 
-export default function AnalyzeView({ onProcessingComplete, benchmarkSamples = [] }) {
+export default function AnalyzeView({ onProcessingComplete, benchmarkSamples: _benchmarkSamples = [], initialSpecimen = null }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [sequence, setSequence] = useState('Unknown');
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [researchMode, setResearchMode] = useState(false);
+  const [specimenFilter, setSpecimenFilter] = useState('ALL');
 
   // Hyperparameters (Defaults matching research methodology)
   const [contrastLowP, setContrastLowP] = useState(1.0);
@@ -55,16 +57,24 @@ export default function AnalyzeView({ onProcessingComplete, benchmarkSamples = [
       setErrorMsg(null);
       const res = await fetch(sample.path);
       const blob = await res.blob();
-      const file = new File([blob], sample.filename, { type: 'image/png' });
+      const mime = sample.filename?.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
+      const file = new File([blob], sample.filename, { type: mime });
       setSelectedFile(file);
       setPreviewUrl(sample.path);
       setSequence(sample.sequence);
-    } catch (err) {
+    } catch (_err) {
       setErrorMsg('Failed to load sample slice.');
     } finally {
       setIsProcessing(false);
     }
   };
+
+  // Auto-load initial specimen if navigated from 3D archive / lightbox
+  useEffect(() => {
+    if (initialSpecimen) {
+      handleLoadSample(initialSpecimen);
+    }
+  }, [initialSpecimen]);
 
   const resetForm = () => {
     setSelectedFile(null);
@@ -190,21 +200,76 @@ export default function AnalyzeView({ onProcessingComplete, benchmarkSamples = [
             </div>
           )}
 
-          {/* Quick-load Sample Benchmarks */}
-          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
-              Or Load Curated Benchmark Specimens:
-            </span>
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-              {benchmarkSamples.map((s, idx) => (
+          {/* Quick-load 10 Curated Cohort Specimens */}
+          <div style={{ marginTop: '1.25rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.85rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '6px' }}>
+              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Sparkles size={12} style={{ color: '#2563eb' }} />
+                <span>Curated Cohort Slices (10 Scans):</span>
+              </span>
+
+              {/* Filter tabs */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {['ALL', 'T1', 'T1C', 'T2'].map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setSpecimenFilter(f)}
+                    style={{
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '4px',
+                      padding: '2px 6px',
+                      fontSize: '10px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      background: specimenFilter === f ? '#1d4ed8' : '#f8fafc',
+                      color: specimenFilter === f ? '#fff' : '#475569'
+                    }}
+                  >
+                    {f === 'ALL' ? 'All (10)' : (f === 'T1' ? 'T1 (3)' : (f === 'T1C' ? 'T1C+ (4)' : 'T2 (3)'))}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Specimen Thumbnails Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '6px', maxHeight: '180px', overflowY: 'auto', padding: '2px' }}>
+              {MRI_SPECIMENS.filter((s) => {
+                if (specimenFilter === 'ALL') return true;
+                if (specimenFilter === 'T1') return s.sequence === 'T1';
+                if (specimenFilter === 'T1C') return s.sequence === 'T1C+';
+                if (specimenFilter === 'T2') return s.sequence === 'T2';
+                return true;
+              }).map((s) => (
                 <button
-                  key={idx}
+                  key={s.id}
                   onClick={() => handleLoadSample(s)}
                   className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.75rem' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 6px',
+                    textAlign: 'left',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    borderColor: selectedFile?.name === s.filename ? '#2563eb' : '#e2e8f0',
+                    backgroundColor: selectedFile?.name === s.filename ? '#eff6ff' : '#ffffff'
+                  }}
+                  title={s.title}
                 >
-                  <ImageIcon size={12} />
-                  <span>{s.sequence} Specimen</span>
+                  <img
+                    src={s.thumbPath}
+                    alt={s.title}
+                    style={{ width: '26px', height: '26px', borderRadius: '3px', objectFit: 'contain', background: '#000' }}
+                  />
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{ fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', color: '#0f172a' }}>
+                      #{s.number} {s.sequence}
+                    </div>
+                    <div className="mono" style={{ fontSize: '9px', color: '#64748b' }}>
+                      {s.filename}
+                    </div>
+                  </div>
                 </button>
               ))}
             </div>
@@ -323,6 +388,80 @@ export default function AnalyzeView({ onProcessingComplete, benchmarkSamples = [
                     onChange={(e) => setButterworthD0(parseFloat(e.target.value))}
                     style={{ width: '100%' }}
                   />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Order (n):</span>
+                      <span className="mono">{butterworthOrder}</span>
+                    </div>
+                    <select
+                      className="form-control"
+                      value={butterworthOrder}
+                      onChange={(e) => setButterworthOrder(parseInt(e.target.value, 10))}
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', width: '100%' }}
+                    >
+                      <option value={1}>n = 1</option>
+                      <option value={2}>n = 2 (Default)</option>
+                      <option value={3}>n = 3</option>
+                      <option value={4}>n = 4</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Median Kernel:</span>
+                      <span className="mono">{medianKernel}x{medianKernel}</span>
+                    </div>
+                    <select
+                      className="form-control"
+                      value={medianKernel}
+                      onChange={(e) => setMedianKernel(parseInt(e.target.value, 10))}
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', width: '100%' }}
+                    >
+                      <option value={3}>3x3 (Default)</option>
+                      <option value={5}>5x5</option>
+                      <option value={7}>7x7</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Upper Stretch %:</span>
+                      <span className="mono">{contrastHighP}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="95"
+                      max="100"
+                      step="0.5"
+                      value={contrastHighP}
+                      onChange={(e) => setContrastHighP(parseFloat(e.target.value))}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Morph Disk Radius:</span>
+                      <span className="mono">r = {morphRadiusLarge}</span>
+                    </div>
+                    <select
+                      className="form-control"
+                      value={morphRadiusLarge}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        setMorphRadiusLarge(val);
+                        setMorphRadiusSmall(Math.max(1, Math.floor(val / 2)));
+                      }}
+                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem', width: '100%' }}
+                    >
+                      <option value={5}>r = 5</option>
+                      <option value={7}>r = 7 (Default)</option>
+                      <option value={9}>r = 9</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             ) : (

@@ -34,7 +34,7 @@ def detect_pipeline_anomalies(
             "code": "UNDER_SEGMENTATION",
             "severity": "warning",
             "message": (
-                "Candidate mask covers less than 0.5% of slice. "
+                f"Foreground: {foreground_percent:.2f}%; candidate: {roi_area_percent:.2f}% of the slice. "
                 "Intensity distribution may lack distinct foreground modes."
             )
         })
@@ -45,8 +45,8 @@ def detect_pipeline_anomalies(
             "code": "OVER_SEGMENTATION",
             "severity": "warning",
             "message": (
-                "Candidate foreground covers over 60% of image area, "
-                "likely encompassing intracranial cavity, skull, "
+                f"Foreground: {foreground_percent:.1f}%; candidate: {roi_area_percent:.1f}% of the image. Large regions "
+                "may encompass broad tissue regions, skull, "
                 "or background."
             )
         })
@@ -65,21 +65,18 @@ def detect_pipeline_anomalies(
 
     # 4. Peripheral boundary contact heuristic
     # Checks for scalp fat, coil artifacts, or acquisition boundaries
-    border_pixels = 0
-    border_pixels += np.count_nonzero(candidate_mask[0, :])
-    border_pixels += np.count_nonzero(candidate_mask[-1, :])
-    border_pixels += np.count_nonzero(candidate_mask[:, 0])
-    border_pixels += np.count_nonzero(candidate_mask[:, -1])
-    total_perimeter = 2 * (h + w)
-    border_contact_ratio = (border_pixels / total_perimeter) * 100.0
+    margin = max(1, int(min(h, w) * .04))
+    peripheral_band = np.ones((h, w), dtype=bool)
+    peripheral_band[margin:-margin, margin:-margin] = False
+    border_contact_ratio = float(np.mean(candidate_mask[peripheral_band] > 0) * 100)
 
     if border_contact_ratio > 10.0:
         warnings.append({
             "code": "PERIPHERAL_BORDER_CONTACT",
             "severity": "warning",
             "message": (
-                f"Candidate region touches {border_contact_ratio:.1f}% "
-                f"of image perimeter, indicating potential scalp fat, "
+                f"Candidate occupies {border_contact_ratio:.1f}% of the outer "
+                f"4% image band, indicating potential peripheral tissue, "
                 f"calvarial bone, or edge cropping artifact."
             )
         })
@@ -109,14 +106,14 @@ def detect_pipeline_anomalies(
                 })
 
     # 6. Otsu threshold out of documented baseline empirical range (51 - 109)
-    if otsu_threshold < 40 or otsu_threshold > 130:
+    if otsu_threshold < 51 or otsu_threshold > 109:
         warnings.append({
             "code": "UNUSUAL_OTSU_THRESHOLD",
             "severity": "advisory",
             "message": (
                 f"Computed Otsu threshold ({otsu_threshold}) lies outside "
-                f"typical empirical range (51-109 gray levels). Slice may "
-                f"exhibit non-standard window leveling or brightness scaling."
+                f"original study range (51-109 gray levels). Input brightness "
+                f"or experimental preprocessing may differ from that study."
             )
         })
 

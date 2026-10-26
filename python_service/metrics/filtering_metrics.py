@@ -38,5 +38,6 @@ def compute_mse_psnr(
 
     return {
         "mse": round(mse, 3),
-        "psnr": round(psnr, 2) if psnr != float("inf") else 999.0
+        "psnr": round(psnr, 2) if np.isfinite(psnr) else None,
+        "exact_match": mse == 0
     }

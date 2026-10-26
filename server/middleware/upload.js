@@ -11,6 +11,7 @@ const fileFilter = (req, file, cb) => {
   const allowedMimeTypes = [
     'image/jpeg',
     'image/png',
+    'image/webp',
     'image/tiff',
     'image/bmp',
     'image/x-ms-bmp',
@@ -18,12 +19,12 @@ const fileFilter = (req, file, cb) => {
     'application/octet-stream'
   ];
 
-  const allowedExtensions = /\.(jpe?g|png|tiff?|bmp|dcm)$/i;
+  const allowedExtensions = /\.(jpe?g|png|tiff?|bmp|webp|dcm)$/i;
 
   if (allowedMimeTypes.includes(file.mimetype) || file.originalname.match(allowedExtensions)) {
     cb(null, true);
   } else {
-    cb(new Error(`Unsupported image format: ${file.originalname}. Please upload JPG, PNG, TIFF, BMP, or DICOM.`), false);
+    cb(new Error(`Unsupported image format: ${file.originalname}. Please upload JPG, PNG, TIFF, BMP, WebP, or DICOM.`), false);
   }
 };
 

@@ -7,7 +7,7 @@ Base64 PNGs.
 import io
 import base64
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 
 def array_to_base64_png(array: np.ndarray) -> str:
@@ -48,11 +48,37 @@ def bytes_to_numpy(image_bytes: bytes) -> np.ndarray:
     """
     Decodes raw image bytes (JPEG, PNG, TIFF, BMP) into a NumPy array.
     """
-    buffer = io.BytesIO(image_bytes)
-    with Image.open(buffer) as pil_img:
-        pil_img.load()
-        # Convert paletted or 1-bit images to RGB or L
-        if pil_img.mode in ("P", "1"):
-            pil_img = pil_img.convert("RGB")
-        arr = np.array(pil_img)
+    if len(image_bytes) > 30 * 1024 * 1024:
+        raise ValueError("Maximum upload size is 30 MB")
+    try:
+        with Image.open(io.BytesIO(image_bytes)) as pil_img:
+            if pil_img.width * pil_img.height > 4_194_304:
+                raise ValueError("Maximum image size is 4 megapixels")
+            pil_img.load()
+            pil_img = ImageOps.exif_transpose(pil_img)
+            if pil_img.mode not in ("L", "RGB", "I", "F", "I;16", "I;16B"):
+                pil_img = pil_img.convert("RGB")
+            arr = np.array(pil_img)
+    except UnidentifiedImageError:
+        import pydicom
+        from pydicom.pixels import apply_modality_lut, apply_voi_lut
+        try:
+            dataset = pydicom.dcmread(io.BytesIO(image_bytes))
+            if int(getattr(dataset, "NumberOfFrames", 1)) != 1:
+                raise ValueError("Upload a single-frame 2D DICOM slice")
+            if int(dataset.Rows) * int(dataset.Columns) > 4_194_304:
+                raise ValueError("Maximum image size is 4 megapixels")
+            arr = apply_voi_lut(apply_modality_lut(dataset.pixel_array, dataset), dataset).astype(float)
+            if arr.ndim != 2:
+                raise ValueError("Only single-channel 2D DICOM slices are supported")
+            if dataset.PhotometricInterpretation == "MONOCHROME1":
+                arr = arr.max() + arr.min() - arr
+        except Exception as exc:
+            raise ValueError(f"Unsupported image or DICOM: {exc}") from exc
+    if arr.dtype != np.uint8:
+        arr = arr.astype(float)
+        low, high = float(arr.min()), float(arr.max())
+        arr = np.uint8(np.clip((arr-low) / (high-low), 0, 1)*255) if high > low else np.zeros(arr.shape, dtype=np.uint8)
+    if min(arr.shape[:2]) < 16:
+        raise ValueError("Minimum image dimensions are 16 by 16")
     return arr

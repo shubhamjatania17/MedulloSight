@@ -4,6 +4,8 @@ import ImageViewer from '../components/ImageViewer';
 import WarningAlert from '../components/WarningAlert';
 
 export default function SegmentationView({ activeSession }) {
+  const [selectedOverlayMode, setSelectedOverlayMode] = useState('composite'); // 'composite' | 'candidate_mask' | 'opened_mask' | 'otsu_mask'
+
   if (!activeSession) {
     return (
       <div className="container" style={{ padding: '3rem 0', textAlign: 'center' }}>
@@ -15,7 +17,6 @@ export default function SegmentationView({ activeSession }) {
   const imgs = activeSession.step_images || {};
   const m = activeSession.metrics || {};
   const bbox = m.roi_bbox || [0, 0, 0, 0];
-  const [selectedOverlayMode, setSelectedOverlayMode] = useState('composite'); // 'composite' | 'candidate_mask' | 'opened_mask' | 'otsu_mask'
 
   return (
     <div className="container-wide" style={{ padding: '2rem 1.5rem' }}>

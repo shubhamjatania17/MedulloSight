@@ -1,23 +1,56 @@
 import React from 'react';
-import { Activity, Clock, Layers, AlertTriangle, ArrowRight, CheckCircle, Database } from 'lucide-react';
+import { Activity, Clock, Layers, AlertTriangle, ArrowRight, CheckCircle, Database, Sparkles } from 'lucide-react';
 import MetricCard from '../components/MetricCard';
 import WarningAlert from '../components/WarningAlert';
+import { MRI_SPECIMENS } from '../data/mriSpecimens';
 
 export default function DashboardView({ activeSession, sessionHistory, onNavigate, onLoadSession }) {
   if (!activeSession) {
     return (
       <div className="container" style={{ padding: '3rem 0', textAlign: 'center' }}>
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', padding: '3rem 2rem' }}>
+        <div className="card" style={{ maxWidth: '680px', margin: '0 auto', padding: '2.5rem 2rem' }}>
           <Activity size={40} style={{ color: '#2563eb', margin: '0 auto 1rem' }} />
           <h2>No Active MRI Analysis Session</h2>
-          <p style={{ color: '#64748b', marginBottom: '1.75rem' }}>
-            Upload an MRI slice (JPG, PNG, TIFF, BMP, DICOM) or load a pre-configured benchmark specimen to begin inspecting the 10-operation classical pipeline.
+          <p style={{ color: '#64748b', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
+            Upload an MRI slice or load one of the 10 curated benchmark specimens from the Colab research cohort to inspect the 10-stage classical pipeline.
           </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginBottom: '1.75rem' }}>
             <button onClick={() => onNavigate('analyze')} className="btn btn-primary">
               <span>Go to Analyze & Upload</span>
               <ArrowRight size={16} />
             </button>
+          </div>
+
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1.25rem', textAlign: 'left' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Sparkles size={13} style={{ color: '#2563eb' }} />
+              <span>Or select from the 10-specimen research cohort:</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(115px, 1fr))', gap: '6px' }}>
+              {MRI_SPECIMENS.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => onNavigate('analyze')}
+                  className="btn btn-secondary btn-sm"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '4px 6px',
+                    fontSize: '11px',
+                    textAlign: 'left'
+                  }}
+                  title={s.title}
+                >
+                  <img
+                    src={s.thumbPath}
+                    alt={s.title}
+                    style={{ width: '22px', height: '22px', borderRadius: '2px', objectFit: 'contain', background: '#000' }}
+                  />
+                  <span>#{s.number} {s.sequence}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

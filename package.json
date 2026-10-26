@@ -1,7 +1,7 @@
 {
   "name": "medullosight",
   "version": "1.0.0",
-  "description": "MedulloSight — Classical MRI Image Analysis & Segmentation (MERN + Python Architecture)",
+  "description": "Medulloblastoma-focused classical SIP and experimental ML research workspace",
   "private": true,
   "scripts": {
     "dev": "concurrently -n \"PY-SERVICE,SERVER,CLIENT\" -c \"cyan,magenta,green\" \"npm run dev:py\" \"npm run dev:server\" \"npm run dev:client\"",
@@ -9,7 +9,10 @@
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "test:py": ".venv\\Scripts\\pytest python_service/tests",
-    "build:client": "npm run build --prefix client"
+    "build:client": "npm run build --prefix client",
+    "train:ml": ".venv\\Scripts\\python.exe -u python_service/ml/train.py --transfer --archive",
+    "test:api": ".venv\\Scripts\\python.exe -m pytest python_service/tests -q",
+    "start": "node server/server.js"
   },
   "devDependencies": {
     "concurrently": "^9.2.5"

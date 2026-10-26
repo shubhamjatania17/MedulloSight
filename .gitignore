@@ -23,3 +23,10 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local research data and generated runtime caches
+.review-tools/
+python_service/data/
+python_service/artifacts/torch-cache/
+python_service/artifacts/features.npz
+python_service/artifacts/embeddings.npz

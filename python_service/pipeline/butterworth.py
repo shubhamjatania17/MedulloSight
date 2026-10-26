@@ -94,7 +94,12 @@ def butterworth_filter(
     img_back = np.fft.ifft2(f_ishift)
     img_real = np.real(img_back)
 
-    # Clip and normalize
+    # Show high-pass magnitude rather than silently clipping negative responses.
+    if filter_type.lower() == "highpass":
+        img_real = np.abs(img_real)
+        if img_real.max() > 0:
+            img_real = img_real / img_real.max() * 255
+    # Clip the low-pass response; the high-pass display is magnitude-normalized.
     filtered_uint8 = np.clip(img_real, 0, 255).astype(np.uint8)
     filter_response_uint8 = (h * 255.0).astype(np.uint8)
 

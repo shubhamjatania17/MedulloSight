@@ -61,7 +61,7 @@ def threshold_edge_map(
     mu = float(np.mean(grad_mag))
     sigma = float(np.std(grad_mag))
     thresh = mu + sigma_factor * sigma
-    binary_edge = np.where(grad_mag >= thresh, 255, 0).astype(np.uint8)
+    binary_edge = np.where(grad_mag > thresh, 255, 0).astype(np.uint8)
     return binary_edge, thresh
 
 

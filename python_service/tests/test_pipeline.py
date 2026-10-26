@@ -93,7 +93,7 @@ def test_median_filter_and_synthetic_noise():
     noisy_metrics = compute_mse_psnr(clean, noisy)
     filtered_metrics = compute_mse_psnr(clean, filtered)
 
-    assert filtered_metrics["psnr"] > noisy_metrics["psnr"]
+    assert filtered_metrics["exact_match"] or filtered_metrics["psnr"] > noisy_metrics["psnr"]
     assert filtered_metrics["mse"] < noisy_metrics["mse"]
 
 

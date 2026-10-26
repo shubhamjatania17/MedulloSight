@@ -4,6 +4,11 @@ import MetricCard from '../components/MetricCard';
 import { benchmarkImpulseNoise } from '../services/api';
 
 export default function MetricsView({ activeSession }) {
+  // Noise Demo State
+  const [noiseDemoResult, setNoiseDemoResult] = useState(null);
+  const [noiseDensity, setNoiseDensity] = useState(0.05);
+  const [isBenchmarking, setIsBenchmarking] = useState(false);
+
   if (!activeSession) {
     return (
       <div className="container" style={{ padding: '3rem 0', textAlign: 'center' }}>
@@ -17,11 +22,6 @@ export default function MetricsView({ activeSession }) {
   const stretchM = m.stretched_metrics || {};
   const bbox = m.roi_bbox || [0, 0, 0, 0];
   const hist = activeSession.histogram_data?.raw || [];
-
-  // Noise Demo State
-  const [noiseDemoResult, setNoiseDemoResult] = useState(null);
-  const [noiseDensity, setNoiseDensity] = useState(0.05);
-  const [isBenchmarking, setIsBenchmarking] = useState(false);
 
   const runNoiseBenchmark = async () => {
     try {

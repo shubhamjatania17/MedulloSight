@@ -43,7 +43,8 @@ def run_classical_pipeline(
     butterworth_order: int = BUTTERWORTH_ORDER,
     median_kernel: int = MEDIAN_KERNEL_SIZE,
     morph_radius_small: int = MORPHOLOGY_DISK_RADIUS_SMALL,
-    morph_radius_large: int = MORPHOLOGY_DISK_RADIUS_LARGE
+    morph_radius_large: int = MORPHOLOGY_DISK_RADIUS_LARGE,
+    pipeline_mode: str = "notebook-v1"
 ) -> Dict[str, Any]:
     """
     Executes the complete MedulloSight 10-operation pipeline.
@@ -53,6 +54,12 @@ def run_classical_pipeline(
         metrics, timing profiles, and candidate ROI.
     """
     start_total_time = time.perf_counter()
+    if pipeline_mode not in {"notebook-v1", "experimental-v2"}:
+        raise ValueError("Unknown pipeline mode")
+    if not 0 <= contrast_low_p < contrast_high_p <= 100:
+        raise ValueError("Contrast percentiles must satisfy 0 <= low < high <= 100")
+    if not .1 <= gamma <= 3 or median_kernel not in {3,5,7} or not 1 <= butterworth_d0 <= 200:
+        raise ValueError("Invalid preprocessing parameters")
     steps_log = []
 
     # --- Step 1: Grayscale Conversion ---
@@ -77,7 +84,7 @@ def run_classical_pipeline(
     t1 = time.perf_counter()
     steps_log.append({
         "step": 2,
-        "name": "Contrast Stretching (1st-99th Percentile)",
+        "name": f"Contrast Stretching ({contrast_low_p:g}-{contrast_high_p:g} Percentiles)",
         "stage": "Stage A — Spatial-Domain Enhancement",
         "duration_ms": round((t1 - t0) * 1000, 2),
         "status": "Completed"
@@ -97,7 +104,7 @@ def run_classical_pipeline(
 
     # --- Step 4: Histogram Equalization ---
     t0 = time.perf_counter()
-    eq_img, _, _ = histogram_equalization(gamma_img)
+    eq_img, _, _ = histogram_equalization(stretched_img if pipeline_mode == "notebook-v1" else gamma_img)
     t1 = time.perf_counter()
     steps_log.append({
         "step": 4,
@@ -110,11 +117,11 @@ def run_classical_pipeline(
     # --- Step 5: Median Filtering ---
     t0 = time.perf_counter()
     # Apply median filtering on the contrast-stretched & gamma enhanced image
-    median_img = apply_median_filter(gamma_img, kernel_size=median_kernel)
+    median_img = apply_median_filter(stretched_img if pipeline_mode == "notebook-v1" else gamma_img, kernel_size=median_kernel)
     t1 = time.perf_counter()
     steps_log.append({
         "step": 5,
-        "name": "Median Filtering (3x3 Kernel)",
+        "name": f"Median Filtering ({median_kernel}x{median_kernel} Kernel)",
         "stage": "Stage A — Spatial-Domain Enhancement",
         "duration_ms": round((t1 - t0) * 1000, 2),
         "status": "Completed"
@@ -157,7 +164,7 @@ def run_classical_pipeline(
 
     # --- Step 8: Otsu Thresholding ---
     t0 = time.perf_counter()
-    otsu_res = otsu_thresholding(bw_lpf)
+    otsu_res = otsu_thresholding(median_img if pipeline_mode == "notebook-v1" else bw_lpf)
     t1 = time.perf_counter()
     steps_log.append({
         "step": 8,
@@ -200,10 +207,16 @@ def run_classical_pipeline(
     # --- Final Candidate ROI Extraction ---
     t0 = time.perf_counter()
     roi_res = extract_candidate_roi(
-        open_close_res["closed_mask"],
+        open_close_res["opened_mask"],
         raw_img=raw_img,
         connectivity=CONNECTIVITY
     )
+    # Notebook order: opening -> largest component -> closing of that component.
+    from scipy.ndimage import binary_closing
+    from skimage.morphology import disk
+    if roi_res["has_candidate"]:
+        refined = binary_closing(roi_res["candidate_mask"] > 0, structure=disk(morph_radius_large))
+        roi_res = extract_candidate_roi((refined * 255).astype(np.uint8), raw_img, CONNECTIVITY)
     t1 = time.perf_counter()
     steps_log.append({
         "step": 11,
@@ -252,6 +265,7 @@ def run_classical_pipeline(
         "edge_results": edge_results,
         "roi_results": roi_res,
         "parameters": {
+            "pipeline_mode": pipeline_mode,
             "contrast_low_p": contrast_low_p,
             "contrast_high_p": contrast_high_p,
             "gamma": gamma,

@@ -62,10 +62,10 @@ export default function Navbar({ currentView, setCurrentView, onBackToLanding, a
               padding: '0.35rem 0.75rem',
               textDecoration: 'none'
             }}
-            title="Return to the MedulloSight Overview & Documentation site"
+            title="Return to the interactive 3D MRI Archive"
           >
             <ArrowLeft size={14} />
-            <span>Landing Page</span>
+            <span>3D Archive</span>
           </a>
 
           <div
@@ -90,8 +90,8 @@ export default function Navbar({ currentView, setCurrentView, onBackToLanding, a
               M
             </div>
             <div>
-              <div style={{ fontWeight: '700', fontSize: '1.05rem', color: '#0f172a', lineHeight: 1.1 }}>
-                MedulloSight Workstation
+              <div style={{ fontFamily: 'var(--font-serif)', fontWeight: '600', fontSize: '1.12rem', color: '#0f172a', lineHeight: 1.1 }}>
+                Medullo<span style={{ color: '#1d4ed8' }}>Sight</span> Workstation
               </div>
               <div style={{ fontSize: '0.7rem', color: '#64748b' }}>
                 Interactive Analysis Studio
